@@ -1,0 +1,8 @@
+System.ObjectDisposedException: Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.
+Object name: 'ShopDb'.
+   at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.Set[TEntity]()
+   at ShopDb.get_Products() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 88
+   at Program.<>c.<<Main>$>b__0_7() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 57
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

@@ -1,0 +1,10 @@
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
+ ---> System.InvalidOperationException: Cart total must be positive
+   at CheckoutHandler.Validate() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 98
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+   --- End of inner exception stack trace ---
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Program.<>c.<<Main>$>b__0_17() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 76
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

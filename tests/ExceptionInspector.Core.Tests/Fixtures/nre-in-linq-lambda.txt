@@ -1,0 +1,6 @@
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Program.<>c.<<Main>$>b__0_19(Order o) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 29
+   at System.Linq.Enumerable.ListSelectIterator`2.Fill(ReadOnlySpan`1 source, Span`1 destination, Func`2 func)
+   at System.Linq.Enumerable.ListSelectIterator`2.ToList()
+   at Program.<>c.<<Main>$>b__0_3() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 29
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

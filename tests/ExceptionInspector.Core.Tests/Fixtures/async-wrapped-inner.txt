@@ -1,0 +1,8 @@
+System.ApplicationException: Checkout failed
+ ---> System.InvalidOperationException: Cart is locked by another session
+   at CheckoutHandler.<LoadCartAsync>g__Throw|1_0() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 97
+   at CheckoutHandler.LoadCartAsync() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 97
+   at CheckoutHandler.HandleAsync() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 94
+   --- End of inner exception stack trace ---
+   at CheckoutHandler.HandleAsync() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 95
+   at Program.<>c__DisplayClass0_0.<<<Main>$>g__CaptureAsync|2>d.MoveNext() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 23

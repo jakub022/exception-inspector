@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ExceptionInspector.Api/ExceptionInspector.Api.csproj" />
+    <Project Path="src/ExceptionInspector.Core/ExceptionInspector.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ExceptionInspector.Api.Tests/ExceptionInspector.Api.Tests.csproj" />
+    <Project Path="tests/ExceptionInspector.Core.Tests/ExceptionInspector.Core.Tests.csproj" />
+  </Folder>
+</Solution>

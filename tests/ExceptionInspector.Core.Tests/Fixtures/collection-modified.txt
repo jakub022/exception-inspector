@@ -1,0 +1,4 @@
+System.InvalidOperationException: Collection was modified; enumeration operation may not execute.
+   at System.Collections.Generic.List`1.Enumerator.MoveNext()
+   at Program.<>c.<<Main>$>b__0_15() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 72
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

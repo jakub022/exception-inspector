@@ -1,0 +1,3 @@
+System.InvalidCastException: Unable to cast object of type 'System.String' to type 'System.Int32'.
+   at Program.<>c.<<Main>$>b__0_16() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 74
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

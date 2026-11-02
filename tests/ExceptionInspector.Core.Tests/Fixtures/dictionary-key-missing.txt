@@ -1,0 +1,4 @@
+System.Collections.Generic.KeyNotFoundException: The given key 'SKU-42' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Program.<>c.<<Main>$>b__0_14() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 68
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19

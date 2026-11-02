@@ -1,0 +1,21 @@
+System.AggregateException: One or more errors occurred. (Stock service unavailable) (The given key 'SKU-42' was not present in the dictionary.)
+ ---> System.InvalidOperationException: Stock service unavailable
+   at Program.<>c.<<Main>$>b__0_20() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 62
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task.Wait(Int32 millisecondsTimeout, CancellationToken cancellationToken)
+   at System.Threading.Tasks.Task.Wait()
+   at Program.<>c.<<Main>$>b__0_9() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 61
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Capture|1(String name, Action action) in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 19
+ ---> (Inner Exception #1) System.Collections.Generic.KeyNotFoundException: The given key 'SKU-42' was not present in the dictionary.
+   at Program.<>c.<<Main>$>b__0_21() in /Users/dev/src/exception-inspector/tools/TraceGen/Program.cs:line 63
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)<---
