@@ -1,8 +1,217 @@
+import {
+  GitBranch,
+  LoaderCircle,
+  Moon,
+  RotateCcw,
+  Search,
+  Share2,
+  Sun,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+const themeStorageKey = "exception-inspector-theme";
+const analysisDuration = 2000;
+
+type Theme = "light" | "dark";
+type ViewState = "input" | "loading" | "results";
+
+function getInitialTheme(): Theme {
+  const savedTheme = localStorage.getItem(themeStorageKey);
+
+  if (savedTheme == "light" || savedTheme == "dark") {
+    return savedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 function App() {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [exceptionText, setExceptionText] = useState("");
+  const [viewState, setViewState] = useState<ViewState>("input");
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem(themeStorageKey, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    if (viewState !== "loading") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setViewState("results");
+    }, analysisDuration);
+
+    return () => window.clearTimeout(timer);
+  }, [viewState]);
+
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
+  };
+
+  const handleInspect = () => {
+    setViewState("loading");
+  };
+
+  const handleAnalyzeAnother = () => {
+    setExceptionText("");
+    setViewState("input");
+  };
+
+  const isDarkMode = theme === "dark";
+  const hasExceptionText = exceptionText.trim().length > 0;
+  const isLoading = viewState === "loading";
+  const showingResults = viewState === "results";
+
   return (
-    <>
-      <button className="btn btn-primary">DaisyUI button</button>
-    </>
+    <div className="min-h-screen bg-base-200 text-base-content">
+      <header className="border-b border-base-300 bg-base-100">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6 py-5">
+          <div>
+            <p className="text-xl font-bold tracking-tight">
+              Exception Inspector
+            </p>
+            <p className="text-sm text-base-content/70">
+              Find the root cause of a .NET error in seconds.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="btn btn-soft btn-sm"
+              type="button"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${isDarkMode ? "dark" : "light"} mode`}
+            >
+              {isDarkMode ? (
+                <Sun size={16} aria-hidden="true" />
+              ) : (
+                <Moon size={16} aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">
+                {isDarkMode ? "Light mode" : "Dark mode"}
+              </span>
+            </button>
+            <a
+              className="btn btn-soft btn-sm gap-2"
+              href="https://github.com/jakub022/exception-inspector"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <GitBranch size={16} aria-hidden="true" />
+              <span className="hidden sm:inline">GitHub</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-5xl items-center px-6 py-12">
+        {!showingResults && (
+          <section
+            className={`card relative w-full bg-base-100 shadow-sm transition-all duration-500 ${isLoading ? "scale-[0.99] opacity-40 blur-sm" : "opacity-100"}`}
+          >
+            <div className="card-body gap-6 p-6 sm:p-10">
+              <div className="max-w-2xl">
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  Understand what went wrong.
+                </h1>
+                <p className="mt-3 text-base text-base-content/70">
+                  Paste a .NET exception or stack trace and we'll help you find
+                  the root cause.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <label className="sr-only" htmlFor="exception-input">
+                  .NET exception or stack trace
+                </label>
+
+                <textarea
+                  id="exception-input"
+                  className="textarea min-h-64 w-full resize-y font-mono text-sm leading-6"
+                  placeholder="Paste your exception or stack trace here..."
+                  value={exceptionText}
+                  onChange={(event) => setExceptionText(event.target.value)}
+                  disabled={isLoading}
+                />
+
+                <p className="text-sm text-base-content/60">
+                  Your exception is used only for this inspection and is not
+                  shared publicly.
+                </p>
+
+                <button
+                  className="btn btn-primary gap-2"
+                  type="button"
+                  onClick={handleInspect}
+                  disabled={!hasExceptionText || isLoading}
+                >
+                  <Search size={18} aria-hidden="true" />
+                  Inspect
+                </button>
+              </div>
+            </div>
+            {isLoading && (
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                role="status"
+                aria-live="polite"
+              >
+                <LoaderCircle
+                  className="animate-spin text-primary"
+                  size={42}
+                  aria-hidden="true"
+                />
+                <p className="text-sm font-medium text-base-content/70">
+                  Inspecting your exception...
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {showingResults && (
+          <section className="card w-full animate-[fade-in_500ms_ease-out] bg-base-100 shadow-sm">
+            <div className="card-body items-center gap-6 p-6 text-center sm:p-10">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  Analysis results
+                </h1>
+                <p className="mt-3 text-base text-base-content/70">
+                  This is where your exception analysis will appear.
+                </p>
+
+                <p className="max-w-2xl text-base leading-7 text-base-content/70">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse potenti. Integer posuere, massa at tincidunt
+                  consequat, libero lorem ullamcorper justo, a tincidunt erat
+                  turpis vitae nulla.
+                </p>
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <button
+                    className="btn btn-primary gap-2"
+                    type="button"
+                    onClick={handleAnalyzeAnother}
+                  >
+                    <RotateCcw size={18} aria-hidden="true" />
+                    Analyze another exception
+                  </button>
+
+                  <button className="btn btn-outline gap-2" type="button">
+                    <Share2 size={18} aria-hidden="true" />
+                    Share report
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }
 
