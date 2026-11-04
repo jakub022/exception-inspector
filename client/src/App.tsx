@@ -1,16 +1,11 @@
-import {
-  GitBranch,
-  LoaderCircle,
-  Moon,
-  RotateCcw,
-  Search,
-  Share2,
-  Sun,
-} from "lucide-react";
+import { GitBranch, LoaderCircle, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { diUnresolvedServiceReport } from "./mocks/reports/diUnresolvedService";
+import ReportView from "./components/ReportView";
 
 const themeStorageKey = "exception-inspector-theme";
 const analysisDuration = 2000;
+const mockReport = diUnresolvedServiceReport;
 
 type Theme = "light" | "dark";
 type ViewState = "input" | "loading" | "results";
@@ -110,53 +105,60 @@ function App() {
 
       <main className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-5xl items-center px-6 py-12">
         {!showingResults && (
-          <section
-            className={`card relative w-full bg-base-100 shadow-sm transition-all duration-500 ${isLoading ? "scale-[0.99] opacity-40 blur-sm" : "opacity-100"}`}
-          >
-            <div className="card-body gap-6 p-6 sm:p-10">
-              <div className="max-w-2xl">
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  Understand what went wrong.
-                </h1>
-                <p className="mt-3 text-base text-base-content/70">
-                  Paste a .NET exception or stack trace and we'll help you find
-                  the root cause.
-                </p>
-              </div>
+          <section className="card relative w-full bg-base-100 shadow-sm">
+            <div
+              className={`transition-all duration-500 ${
+                isLoading
+                  ? "scale-[0.99] opacity-40 blur-sm"
+                  : "scale-100 opacity-100 blur-0"
+              }`}
+            >
+              <div className="card-body gap-6 p-6 sm:p-10">
+                <div className="max-w-2xl">
+                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    Understand what went wrong.
+                  </h1>
+                  <p className="mt-3 text-base text-base-content/70">
+                    Paste a .NET exception or stack trace and we'll help you
+                    find the root cause.
+                  </p>
+                </div>
 
-              <div className="space-y-4">
-                <label className="sr-only" htmlFor="exception-input">
-                  .NET exception or stack trace
-                </label>
+                <div className="space-y-4">
+                  <label className="sr-only" htmlFor="exception-input">
+                    .NET exception or stack trace
+                  </label>
 
-                <textarea
-                  id="exception-input"
-                  className="textarea min-h-64 w-full resize-y font-mono text-sm leading-6"
-                  placeholder="Paste your exception or stack trace here..."
-                  value={exceptionText}
-                  onChange={(event) => setExceptionText(event.target.value)}
-                  disabled={isLoading}
-                />
+                  <textarea
+                    id="exception-input"
+                    className="textarea min-h-64 w-full resize-y font-mono text-sm leading-6"
+                    placeholder="Paste your exception or stack trace here..."
+                    value={exceptionText}
+                    onChange={(event) => setExceptionText(event.target.value)}
+                    disabled={isLoading}
+                  />
 
-                <p className="text-sm text-base-content/60">
-                  Your exception is used only for this inspection and is not
-                  shared publicly.
-                </p>
+                  <p className="text-sm text-base-content/60">
+                    Your exception is used only for this inspection and is not
+                    shared publicly.
+                  </p>
 
-                <button
-                  className="btn btn-primary gap-2"
-                  type="button"
-                  onClick={handleInspect}
-                  disabled={!hasExceptionText || isLoading}
-                >
-                  <Search size={18} aria-hidden="true" />
-                  Inspect
-                </button>
+                  <button
+                    className="btn btn-primary gap-2"
+                    type="button"
+                    onClick={handleInspect}
+                    disabled={!hasExceptionText || isLoading}
+                  >
+                    <Search size={18} aria-hidden="true" />
+                    Inspect
+                  </button>
+                </div>
               </div>
             </div>
+
             {isLoading && (
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3"
                 role="status"
                 aria-live="polite"
               >
@@ -174,41 +176,10 @@ function App() {
         )}
 
         {showingResults && (
-          <section className="card w-full animate-[fade-in_500ms_ease-out] bg-base-100 shadow-sm">
-            <div className="card-body items-center gap-6 p-6 text-center sm:p-10">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  Analysis results
-                </h1>
-                <p className="mt-3 text-base text-base-content/70">
-                  This is where your exception analysis will appear.
-                </p>
-
-                <p className="max-w-2xl text-base leading-7 text-base-content/70">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse potenti. Integer posuere, massa at tincidunt
-                  consequat, libero lorem ullamcorper justo, a tincidunt erat
-                  turpis vitae nulla.
-                </p>
-
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <button
-                    className="btn btn-primary gap-2"
-                    type="button"
-                    onClick={handleAnalyzeAnother}
-                  >
-                    <RotateCcw size={18} aria-hidden="true" />
-                    Analyze another exception
-                  </button>
-
-                  <button className="btn btn-outline gap-2" type="button">
-                    <Share2 size={18} aria-hidden="true" />
-                    Share report
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+          <ReportView
+            report={mockReport}
+            handleAnalyzeAnother={handleAnalyzeAnother}
+          />
         )}
       </main>
     </div>
