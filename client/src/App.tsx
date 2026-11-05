@@ -1,11 +1,10 @@
 import { GitBranch, LoaderCircle, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import { diUnresolvedServiceReport } from "./mocks/reports/diUnresolvedService";
 import ReportView from "./components/ReportView";
+import type { AnalysisReport } from "./api/types";
+import { apiClient } from "./api";
 
 const themeStorageKey = "exception-inspector-theme";
-const analysisDuration = 2000;
-const mockReport = diUnresolvedServiceReport;
 
 type Theme = "light" | "dark";
 type ViewState = "input" | "loading" | "results";
@@ -26,34 +25,38 @@ function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [exceptionText, setExceptionText] = useState("");
   const [viewState, setViewState] = useState<ViewState>("input");
+  const [report, setReport] = useState<AnalysisReport | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem(themeStorageKey, theme);
   }, [theme]);
 
-  useEffect(() => {
-    if (viewState !== "loading") {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setViewState("results");
-    }, analysisDuration);
-
-    return () => window.clearTimeout(timer);
-  }, [viewState]);
-
   const toggleTheme = () => {
     setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
   };
 
-  const handleInspect = () => {
+  const handleInspect = async () => {
     setViewState("loading");
+
+    try {
+      const response = await apiClient.analyze({ text: exceptionText });
+
+      setReport(response);
+      setViewState("results");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      setViewState("input");
+      console.error(error);
+    }
   };
 
   const handleAnalyzeAnother = () => {
     setExceptionText("");
+    setReport(null);
     setViewState("input");
   };
 
@@ -146,7 +149,7 @@ function App() {
                   <button
                     className="btn btn-primary gap-2"
                     type="button"
-                    onClick={handleInspect}
+                    onClick={() => void handleInspect()}
                     disabled={!hasExceptionText || isLoading}
                   >
                     <Search size={18} aria-hidden="true" />
@@ -175,9 +178,9 @@ function App() {
           </section>
         )}
 
-        {showingResults && (
+        {showingResults && report !== null && (
           <ReportView
-            report={mockReport}
+            report={report}
             handleAnalyzeAnother={handleAnalyzeAnother}
           />
         )}
