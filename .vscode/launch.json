@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Exception Inspector API",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/ExceptionInspector.Api/bin/Debug/net10.0/ExceptionInspector.Api.dll",
+      "cwd": "${workspaceFolder}/src/ExceptionInspector.Api",
+      "preLaunchTask": "build Exception Inspector API",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5015"
+      },
+      "justMyCode": true
+    }
+  ]
+}

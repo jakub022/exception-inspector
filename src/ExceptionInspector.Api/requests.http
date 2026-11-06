@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:5015
+
+### Analyze an exception
+POST {{baseUrl}}/api/analyze
+Content-Type: application/json
+
+{
+  "text": "System.InvalidOperationException: Unable to resolve service for type 'IOrderRepository' while attempting to activate 'OrderService'."
+}
+
+### Reject empty input
+POST {{baseUrl}}/api/analyze
+Content-Type: application/json
+
+{
+  "text": ""
+}
