@@ -14,8 +14,18 @@ type ViewState =
   | "shared-loading"
   | "shared-error";
 
+function appUrl(path: string): string {
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  return `${basePath}${path}` || "/";
+}
+
 function getShareSlug(): string | null {
-  const match = window.location.pathname.match(/^\/s\/([^/]+)\/?$/);
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const pathname =
+    basePath.length > 0 && window.location.pathname.startsWith(basePath)
+      ? window.location.pathname.slice(basePath.length)
+      : window.location.pathname;
+  const match = pathname.match(/^\/s\/([^/]+)\/?$/);
   return match === null ? null : decodeURIComponent(match[1]);
 }
 
@@ -123,7 +133,7 @@ function App() {
   };
 
   const handleAnalyzeAnother = () => {
-    window.history.pushState({}, "", "/");
+    window.history.pushState({}, "", appUrl("/"));
     setExceptionText("");
     setReport(null);
     setShareSlug(null);
@@ -140,7 +150,7 @@ function App() {
         text: exceptionText,
       });
 
-      window.history.pushState({}, "", `/s/${response.slug}`);
+      window.history.pushState({}, "", appUrl(`/s/${response.slug}`));
       setShareSlug(response.slug);
       await navigator.clipboard?.writeText(response.url);
     } catch (error) {
