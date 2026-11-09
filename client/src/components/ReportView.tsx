@@ -11,6 +11,8 @@ import type { AnalysisReport, ExceptionNode, StackFrame } from "../api/types";
 interface ReportViewProps {
   report: AnalysisReport;
   handleAnalyzeAnother: () => void;
+  handleShare: () => void;
+  isSharing: boolean;
 }
 
 function formatFrameKind(kind: string): string {
@@ -111,7 +113,12 @@ function ExceptionNodeView({ node }: { node: ExceptionNode }) {
   );
 }
 
-function ReportView({ report, handleAnalyzeAnother }: ReportViewProps) {
+function ReportView({
+  report,
+  handleAnalyzeAnother,
+  handleShare,
+  isSharing,
+}: ReportViewProps) {
   const { verdict, fix, location, evidence, extended } = report;
   const hasLocation =
     location !== null &&
@@ -145,11 +152,11 @@ function ReportView({ report, handleAnalyzeAnother }: ReportViewProps) {
             <button
               className="btn btn-outline btn-sm gap-2"
               type="button"
-              disabled
-              title="Share links are not available yet."
+              onClick={handleShare}
+              disabled={isSharing}
             >
               <Share2 size={16} aria-hidden="true" />
-              Share report
+              {isSharing ? "Creating link..." : "Share report"}
             </button>
           </div>
         </header>

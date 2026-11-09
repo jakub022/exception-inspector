@@ -1,0 +1,12 @@
+.git
+.github
+.vscode
+client
+tests
+**/bin
+**/obj
+*.user
+*.suo
+*.mdf
+*.ldf
+*.ndf

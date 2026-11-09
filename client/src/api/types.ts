@@ -2,6 +2,22 @@ export interface AnalyzeRequest {
   text: string;
 }
 
+export interface CreateShareRequest {
+  text: string;
+}
+
+export interface CreateShareResponse {
+  slug: string;
+  url: string;
+  expiresAt: string;
+  deleteToken: string;
+}
+
+export interface SharedReport {
+  report: AnalysisReport;
+  expiresAt: string;
+}
+
 export interface AnalysisReport {
   analysisId: string;
   engineVersion: string;

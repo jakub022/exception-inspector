@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5015
+@baseUrl = http://localhost:8080
 
 ### Analyze an exception
 POST {{baseUrl}}/api/analyze
@@ -15,3 +15,18 @@ Content-Type: application/json
 {
   "text": ""
 }
+
+### Create a seven-day share
+POST {{baseUrl}}/api/shares
+Content-Type: application/json
+
+{
+  "text": "System.InvalidOperationException: Unable to resolve service for type 'IOrderRepository' while attempting to activate 'OrderService'."
+}
+
+### Get a share
+GET {{baseUrl}}/api/shares/{{slug}}
+
+### Delete a share
+DELETE {{baseUrl}}/api/shares/{{slug}}
+X-Delete-Token: {{deleteToken}}

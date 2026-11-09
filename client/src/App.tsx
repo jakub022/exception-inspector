@@ -7,7 +7,17 @@ import { apiClient } from "./api";
 const themeStorageKey = "exception-inspector-theme";
 
 type Theme = "light" | "dark";
-type ViewState = "input" | "loading" | "results";
+type ViewState =
+  | "input"
+  | "loading"
+  | "results"
+  | "shared-loading"
+  | "shared-error";
+
+function getShareSlug(): string | null {
+  const match = window.location.pathname.match(/^\/s\/([^/]+)\/?$/);
+  return match === null ? null : decodeURIComponent(match[1]);
+}
 
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem(themeStorageKey);
@@ -24,13 +34,71 @@ function getInitialTheme(): Theme {
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [exceptionText, setExceptionText] = useState("");
-  const [viewState, setViewState] = useState<ViewState>("input");
+  const [viewState, setViewState] = useState<ViewState>(() =>
+    getShareSlug() === null ? "input" : "shared-loading",
+  );
   const [report, setReport] = useState<AnalysisReport | null>(null);
+  const [shareSlug, setShareSlug] = useState<string | null>(getShareSlug);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem(themeStorageKey, theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (shareSlug === null) {
+      return;
+    }
+
+    let active = true;
+
+    void apiClient
+      .getShare(shareSlug)
+      .then((response) => {
+        if (!active) {
+          return;
+        }
+
+        setReport(response.report);
+        setViewState("results");
+      })
+      .catch((error: unknown) => {
+        if (!active) {
+          return;
+        }
+
+        setShareError(
+          error instanceof Error
+            ? error.message
+            : "This share link could not be loaded.",
+        );
+        setViewState("shared-error");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [shareSlug]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const nextSlug = getShareSlug();
+      setShareSlug(nextSlug);
+
+      if (nextSlug === null) {
+        setReport(null);
+        setShareError(null);
+        setViewState("input");
+      } else {
+        setViewState("shared-loading");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const toggleTheme = () => {
     setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
@@ -55,15 +123,43 @@ function App() {
   };
 
   const handleAnalyzeAnother = () => {
+    window.history.pushState({}, "", "/");
     setExceptionText("");
     setReport(null);
+    setShareSlug(null);
+    setShareError(null);
     setViewState("input");
+  };
+
+  const handleShare = async () => {
+    setIsSharing(true);
+    setShareError(null);
+
+    try {
+      const response = await apiClient.createShare({
+        text: exceptionText,
+      });
+
+      window.history.pushState({}, "", `/s/${response.slug}`);
+      setShareSlug(response.slug);
+      await navigator.clipboard?.writeText(response.url);
+    } catch (error) {
+      setShareError(
+        error instanceof Error
+          ? error.message
+          : "The share link could not be created.",
+      );
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   const isDarkMode = theme === "dark";
   const hasExceptionText = exceptionText.trim().length > 0;
   const isLoading = viewState === "loading";
   const showingResults = viewState === "results";
+  const showingSharedLoading = viewState === "shared-loading";
+  const showingSharedError = viewState === "shared-error";
 
   return (
     <div className="min-h-screen bg-base-200 text-base-content">
@@ -107,7 +203,7 @@ function App() {
       </header>
 
       <main className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-5xl items-center px-6 py-12">
-        {!showingResults && (
+        {(viewState === "input" || viewState === "loading") && (
           <section className="card relative w-full bg-base-100 shadow-sm">
             <div
               className={`transition-all duration-500 ${
@@ -178,11 +274,39 @@ function App() {
           </section>
         )}
 
+        {showingSharedLoading && (
+          <section className="flex w-full flex-col items-center gap-3 py-20">
+            <LoaderCircle
+              className="animate-spin text-primary"
+              size={42}
+              aria-hidden="true"
+            />
+            <p className="text-sm font-medium text-base-content/70">
+              Loading shared report...
+            </p>
+          </section>
+        )}
+
+        {showingSharedError && (
+          <section className="alert alert-error w-full" role="alert">
+            <p>{shareError}</p>
+          </section>
+        )}
+
         {showingResults && report !== null && (
+          <>
+            {shareError !== null && (
+              <div className="alert alert-error mb-4 w-full" role="alert">
+                <p>{shareError}</p>
+              </div>
+            )}
           <ReportView
             report={report}
             handleAnalyzeAnother={handleAnalyzeAnother}
+            handleShare={() => void handleShare()}
+            isSharing={isSharing}
           />
+          </>
         )}
       </main>
     </div>
