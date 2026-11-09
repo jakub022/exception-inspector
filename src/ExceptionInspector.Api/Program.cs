@@ -1,11 +1,13 @@
 using ExceptionInspector.Api.Endpoints;
 using ExceptionInspector.Api.Services;
+using ExceptionInspector.Core.Analysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
-builder.Services.AddScoped<IAnalysisService, MockAnalysisService>();
+builder.Services.AddSingleton<IExceptionAnalyzer, ExceptionAnalyzer>();
+builder.Services.AddScoped<IAnalysisService, ParserAnalysisService>();
 
 var app = builder.Build();
 
