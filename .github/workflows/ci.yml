@@ -137,12 +137,17 @@ jobs:
         env:
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           CONTAINER_APP_NAME: ${{ vars.AZURE_CONTAINER_APP_NAME }}
+          GHCR_USERNAME: ${{ vars.GHCR_USERNAME }}
+          GHCR_READ_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
         with:
           inlineScript: |
             az containerapp update \
               --resource-group "$RESOURCE_GROUP" \
               --name "$CONTAINER_APP_NAME" \
-              --image ghcr.io/jakub022/exception-inspector-api:latest
+              --image ghcr.io/jakub022/exception-inspector-api:latest \
+              --registry-server ghcr.io \
+              --registry-username "$GHCR_USERNAME" \
+              --registry-password "$GHCR_READ_TOKEN"
 
       - name: Smoke test API
         env:
