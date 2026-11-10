@@ -175,14 +175,18 @@ function App() {
     <div className="app-shell min-h-screen bg-base-200 text-base-content">
       <header className="app-header border-b border-base-300">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6 py-5">
-          <div>
+          <a
+            className="rounded-sm focus:outline-2 focus:outline-offset-4 focus:outline-primary"
+            href={appUrl("/")}
+            aria-label="Go to Exception Inspector home"
+          >
             <p className="font-mono text-xl font-bold tracking-tight text-primary">
               exception-inspector
             </p>
             <p className="text-sm text-base-content/70">
-              Find the root cause of a .NET error in seconds.
+              A .NET exception parser and analyzer
             </p>
-          </div>
+          </a>
           <div className="flex items-center gap-2">
             <button
               className="btn btn-outline btn-sm border-base-300 bg-base-100/60"
@@ -212,7 +216,11 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-5xl items-center px-6 py-12">
+      <main
+        className={`mx-auto flex min-h-[calc(100vh-180px)] w-full items-center px-6 py-12 ${
+          showingResults ? "max-w-7xl" : "max-w-5xl"
+        }`}
+      >
         {(viewState === "input" || viewState === "loading") && (
           <section className="app-card card relative w-full bg-base-100/95 shadow-sm">
             <div
@@ -224,13 +232,9 @@ function App() {
             >
               <div className="card-body gap-6 p-6 sm:p-10">
                 <div className="max-w-2xl">
-                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                    Understand what went wrong.
+                  <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Paste a .NET exception to inspect its structure
                   </h1>
-                  <p className="mt-3 text-base text-base-content/70">
-                    Paste a .NET exception or stack trace and we'll help you
-                    find the root cause.
-                  </p>
                 </div>
 
                 <div className="space-y-4">
@@ -240,7 +244,7 @@ function App() {
 
                   <textarea
                     id="exception-input"
-                    className="textarea min-h-64 w-full resize-y font-mono text-sm leading-6"
+                    className="textarea min-h-64 w-full resize-none border-0 bg-base-200/70 font-mono text-sm leading-6 shadow-inner focus:outline-2 focus:outline-primary"
                     placeholder="Paste your exception or stack trace here..."
                     value={exceptionText}
                     onChange={(event) => setExceptionText(event.target.value)}

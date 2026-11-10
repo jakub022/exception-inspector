@@ -5,7 +5,10 @@ import {
   Info,
   RotateCcw,
   Share2,
+  Wrench,
 } from "lucide-react";
+import type { TokensResult } from "shiki/types";
+import { useEffect, useState } from "react";
 import type { AnalysisReport, ExceptionNode, StackFrame } from "../api/types";
 
 interface ReportViewProps {
@@ -13,6 +16,21 @@ interface ReportViewProps {
   handleAnalyzeAnother: () => void;
   handleShare: () => void;
   isSharing: boolean;
+}
+
+function getCsharpHighlighter() {
+  return Promise.all([
+    import("shiki/core"),
+    import("shiki/engine/javascript"),
+    import("@shikijs/langs/csharp"),
+    import("@shikijs/themes/vitesse-dark"),
+  ]).then(([core, engine, language, theme]) =>
+    core.createHighlighterCore({
+      engine: engine.createJavaScriptRegexEngine(),
+      langs: [language.default],
+      themes: [theme.default],
+    }),
+  );
 }
 
 function formatFrameKind(kind: string): string {
@@ -29,6 +47,55 @@ function formatFrameLocation(frame: StackFrame): string | null {
   }
 
   return frame.line === null ? frame.file : `${frame.file}:${frame.line}`;
+}
+
+function HighlightedCode({ code }: { code: string }) {
+  const [tokens, setTokens] = useState<TokensResult["tokens"] | null>(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    void getCsharpHighlighter()
+      .then((highlighter) =>
+        highlighter.codeToTokens(code, {
+          lang: "csharp",
+          theme: "vitesse-dark",
+        }),
+      )
+      .then((result) => {
+        if (isCurrent) {
+          setTokens(result.tokens);
+        }
+      })
+      .catch((error: unknown) => {
+        console.error("Unable to highlight C# code snippet.", error);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [code]);
+
+  if (tokens === null) {
+    return <code>{code}</code>;
+  }
+
+  return (
+    <code>
+      {tokens.map((line, lineIndex) => (
+        <span className="block" key={lineIndex}>
+          {line.map((token, tokenIndex) => (
+            <span
+              key={`${lineIndex}-${tokenIndex}`}
+              style={{ color: token.color }}
+            >
+              {token.content}
+            </span>
+          ))}
+        </span>
+      ))}
+    </code>
+  );
 }
 
 function FrameRow({ frame }: { frame: StackFrame }) {
@@ -78,7 +145,7 @@ function FrameRow({ frame }: { frame: StackFrame }) {
 function ExceptionNodeView({ node }: { node: ExceptionNode }) {
   return (
     <li className="space-y-3">
-      <div className="rounded-box border border-base-300 p-4">
+      <div className="rounded-box bg-base-200/60 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <code className="break-all text-sm font-semibold">{node.type}</code>
 
@@ -128,7 +195,7 @@ function ReportView({
 
   return (
     <section className="app-card card w-full animate-[fade-in_500ms_ease-out] bg-base-100/95 shadow-sm">
-      <div className="card-body gap-8 p-6 sm:p-10">
+      <div className="card-body gap-10 p-6 sm:p-10 lg:p-14">
         <header className="flex flex-col gap-5 border-b border-base-300 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-primary">
@@ -162,7 +229,7 @@ function ReportView({
         </header>
 
         <section
-          className="rounded-box border border-primary/30 bg-primary/5 p-5"
+          className="rounded-box bg-primary/8 p-5"
           aria-labelledby="verdict-heading"
         >
           <div className="flex items-start gap-3">
@@ -190,30 +257,45 @@ function ReportView({
         </section>
 
         {fix !== null && (
-          <section aria-labelledby="fix-heading">
-            <h2 id="fix-heading" className="text-xl font-semibold">
-              Recommended fix
-            </h2>
-            <p className="mt-3 leading-7 text-base-content/80">
-              {fix.explanation}
-            </p>
+          <section
+            className="rounded-box bg-secondary/10 p-5 sm:p-6"
+            aria-label="Suggested next step"
+          >
+            <div className="flex items-start gap-3">
+              <Wrench
+                className="mt-1 shrink-0 text-secondary"
+                size={20}
+                aria-hidden="true"
+              />
+
+              <div className="min-w-0">
+                <p className="font-semibold text-base-content">
+                  Suggested next step
+                </p>
+                <p className="mt-2 leading-7 text-base-content/80">
+                  {fix.explanation}
+                </p>
+              </div>
+            </div>
 
             {fix.code !== null && fix.code.length > 0 && (
-              <pre className="mockup-code mt-4 overflow-x-auto text-sm">
-                <code>{fix.code}</code>
+              <pre className="mt-4 ml-8 overflow-x-auto rounded-box bg-base-200/80 p-4 font-mono text-sm leading-6 text-base-content sm:ml-8">
+                <HighlightedCode code={fix.code} />
               </pre>
             )}
 
             {fix.docsUrl !== null && fix.docsUrl.length > 0 && (
-              <a
-                className="btn btn-ghost btn-sm mt-4 gap-2 px-0"
-                href={fix.docsUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open documentation
-                <ExternalLink size={15} aria-hidden="true" />
-              </a>
+              <div className="ml-8">
+                <a
+                  className="btn btn-ghost btn-sm mt-4 gap-2 px-0"
+                  href={fix.docsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open documentation
+                  <ExternalLink size={15} aria-hidden="true" />
+                </a>
+              </div>
             )}
           </section>
         )}
@@ -224,7 +306,7 @@ function ReportView({
           </h2>
 
           {hasLocation && location !== null ? (
-            <div className="mt-3 rounded-box border border-base-300 p-4">
+            <div className="mt-3 rounded-box bg-base-200/60 p-4">
               <code className="break-all text-sm">{location.method}</code>
 
               {(location.file !== null || location.line !== null) && (
@@ -265,7 +347,7 @@ function ReportView({
           )}
         </section>
 
-        <details className="collapse-arrow collapse border border-base-300">
+        <details className="collapse-arrow collapse bg-base-200/35">
           <summary className="collapse-title flex items-center gap-2 font-semibold">
             Extended information
           </summary>
@@ -322,7 +404,7 @@ function ReportView({
                 <div className="mt-4 space-y-4">
                   {extended.findings.map((finding) => (
                     <article
-                      className="rounded-box border border-base-300 p-4"
+                      className="rounded-box bg-base-200/60 p-4"
                       key={finding.ruleId}
                     >
                       <h3 className="font-semibold">{finding.title}</h3>
