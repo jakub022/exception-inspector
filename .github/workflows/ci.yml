@@ -124,9 +124,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    environment:
-      name: production
-      url: ${{ vars.AZURE_API_URL }}
     steps:
       - name: Log in to Azure with OIDC
         uses: azure/login@v2
