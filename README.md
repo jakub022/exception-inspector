@@ -5,7 +5,7 @@
 ![Exception Inspector demo](docs/demo.gif)
 
 <p>
-  <a href="https://jakub022.github.io/exception-inspector/"><strong>Try it out →</strong></a>
+  <a href="https://jakub022.github.io/exception-inspector/" target="_blank" rel="noopener noreferrer"><strong>Try it out →</strong></a>
   &nbsp;&nbsp;
 </p>
 
