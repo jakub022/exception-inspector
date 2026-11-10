@@ -127,7 +127,7 @@ function ReportView({
       location.line !== null);
 
   return (
-    <section className="card w-full animate-[fade-in_500ms_ease-out] bg-base-100 shadow-sm">
+    <section className="app-card card w-full animate-[fade-in_500ms_ease-out] bg-base-100/95 shadow-sm">
       <div className="card-body gap-8 p-6 sm:p-10">
         <header className="flex flex-col gap-5 border-b border-base-300 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div>

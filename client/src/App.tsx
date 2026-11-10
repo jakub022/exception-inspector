@@ -172,12 +172,12 @@ function App() {
   const showingSharedError = viewState === "shared-error";
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content">
-      <header className="border-b border-base-300 bg-base-100">
+    <div className="app-shell min-h-screen bg-base-200 text-base-content">
+      <header className="app-header border-b border-base-300">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6 py-5">
           <div>
-            <p className="text-xl font-bold tracking-tight">
-              Exception Inspector
+            <p className="font-mono text-xl font-bold tracking-tight text-primary">
+              exception-inspector
             </p>
             <p className="text-sm text-base-content/70">
               Find the root cause of a .NET error in seconds.
@@ -185,7 +185,7 @@ function App() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-soft btn-sm"
+              className="btn btn-outline btn-sm border-base-300 bg-base-100/60"
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${isDarkMode ? "dark" : "light"} mode`}
@@ -200,7 +200,7 @@ function App() {
               </span>
             </button>
             <a
-              className="btn btn-soft btn-sm gap-2"
+              className="btn btn-outline btn-sm gap-2 border-base-300 bg-base-100/60"
               href="https://github.com/jakub022/exception-inspector"
               target="_blank"
               rel="noreferrer"
@@ -214,7 +214,7 @@ function App() {
 
       <main className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-5xl items-center px-6 py-12">
         {(viewState === "input" || viewState === "loading") && (
-          <section className="card relative w-full bg-base-100 shadow-sm">
+          <section className="app-card card relative w-full bg-base-100/95 shadow-sm">
             <div
               className={`transition-all duration-500 ${
                 isLoading
