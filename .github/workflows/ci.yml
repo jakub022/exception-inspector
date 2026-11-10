@@ -132,15 +132,17 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy API image to Container Apps
-        uses: azure/container-apps-deploy-action@v1
+      - name: Update Container App image
+        uses: azure/cli@v2
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          CONTAINER_APP_NAME: ${{ vars.AZURE_CONTAINER_APP_NAME }}
         with:
-          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ vars.AZURE_CONTAINER_APP_NAME }}
-          imageToDeploy: ghcr.io/jakub022/exception-inspector-api:sha-${{ github.sha }}
-          registryUrl: ghcr.io
-          registryUsername: ${{ vars.GHCR_USERNAME }}
-          registryPassword: ${{ secrets.GHCR_READ_TOKEN }}
+          inlineScript: |
+            az containerapp update \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$CONTAINER_APP_NAME" \
+              --image "ghcr.io/jakub022/exception-inspector-api:sha-${{ github.sha }}"
 
       - name: Smoke test API
         env:
