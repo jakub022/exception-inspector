@@ -141,13 +141,17 @@ jobs:
           GHCR_READ_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
         with:
           inlineScript: |
+            az containerapp registry set \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$CONTAINER_APP_NAME" \
+              --server ghcr.io \
+              --username "$GHCR_USERNAME" \
+              --password "$GHCR_READ_TOKEN"
+
             az containerapp update \
               --resource-group "$RESOURCE_GROUP" \
               --name "$CONTAINER_APP_NAME" \
-              --image ghcr.io/jakub022/exception-inspector-api:latest \
-              --registry-server ghcr.io \
-              --registry-username "$GHCR_USERNAME" \
-              --registry-password "$GHCR_READ_TOKEN"
+              --image ghcr.io/jakub022/exception-inspector-api:latest
 
       - name: Smoke test API
         env:
